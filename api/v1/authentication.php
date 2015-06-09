@@ -86,6 +86,7 @@ $app->post('/login', function() use ($app) {
 	
 $app->get('/customers', function() use ($app) {
     $response = array();
+    $customers = array();
     $db = new DbHandler();
     
     if(true){
@@ -94,6 +95,9 @@ $app->get('/customers', function() use ($app) {
         if ($result != NULL) {
         	$response['status'] = "success";
         	$response['message'] = 'Logged in successfully.';
+        	foreach($result as $i=>$var){
+        		$customers[$i]['name']= $var[0];
+        	}
         	$response['customers'] = $result;
         	//$response = $result;
             echoResponse(200, $response);

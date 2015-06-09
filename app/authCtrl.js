@@ -9,6 +9,9 @@ app.controller('authCtrl', function ($scope, $rootScope, $routeParams, $location
        
    }).then(function (results) {
        Data.toast(results);
+       angular.forEach(results., function(value, key) {
+    	   this.push(key + ': ' + value);
+    	 }, log);
        $scope.customers = results;
    });
 

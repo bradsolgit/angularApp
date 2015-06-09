@@ -1,7 +1,3 @@
-CREATE DATABASE IF NOT EXISTS angularcode;
-
-USE angularcode;
-
 --
 -- Table structure for table `customers_auth`
 --
