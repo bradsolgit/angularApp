@@ -1,4 +1,4 @@
-app.controller('authCtrl', function ($scope, $rootScope, $routeParams, $location, $http, Data) {
+app.controller('customerCtrl', function ($scope, $rootScope, $routeParams, $location, $http, Data) {
     //initially set those objects to null to avoid undefined error
     $scope.login = {};
     $scope.signup = {};
@@ -12,6 +12,14 @@ app.controller('authCtrl', function ($scope, $rootScope, $routeParams, $location
         $scope.customers = results.customers;
    });
 
+   customer: function(Data, $scope,$route){
+       var customerID = $route.current.params.customerID;
+       return Data.post('customer', {
+       	customerID: customerID
+       	}).then(function (results) {
+       		$scope.customer = results;
+           });
+     }
    
     $scope.doLogin = function (customer) {
         Data.post('login', {

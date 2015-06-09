@@ -91,15 +91,17 @@ $app->get('/customers', function() use ($app) {
     
     if(true){
         $tabble_name = "angularcode_customers";
-        $result = $db->getAllRecords("select * from angularcode_customers");
+        $result = $db->getAllRecords("select customerName,email,address,customerNumber from angularcode_customers");
         if ($result != NULL) {
         	$response['status'] = "success";
         	$response['message'] = 'Logged in successfully.';
         	foreach($result as $i=>$var){
         		$customers[$i]['name']= $var[0];
+        		$customers[$i]['email']= $var[1];
+        		$customers[$i]['address']= $var[2];
+        		$customers[$i]['customerNumber']= $var[3];
         	}
-        	$response['customers'] = $result;
-        	//$response = $result;
+        	$response['customers'] = $customers;
             echoResponse(200, $response);
         } else {
             $response["status"] = "error";
@@ -112,6 +114,65 @@ $app->get('/customers', function() use ($app) {
         echoResponse(201, $response);
     }
 });
+
+	$app->post('/customer', function() use ($app) {
+		$r = json_decode($app->request->getBody());
+		$response = array();
+		$db = new DbHandler();
+		$customerID = $r->customerID;
+		$user = $db->getOneRecord("select customerName,email,address from angularcode_customers where customerNumber='$customerID'");
+		if ($user != NULL) {
+			$response['status'] = "success";
+			$response['message'] = 'Logged in successfully.';
+			$response['name'] = $user['customerName'];
+			$response['email'] = $user['email'];
+			$response['address'] = $user['address'];
+		}else {
+			$response['status'] = "error";
+			$response['message'] = 'No such user is registered';
+		}
+		echoResponse(200, $response);
+	});
+	
+	$app->get('/insertCustomer', function() use ($app) {
+		$response = array();
+		$r = json_decode($app->request->getBody());
+		$db = new DbHandler();
+		$phone = $r->customer->phone;
+		$name = $r->customer->name;
+		$email = $r->customer->email;
+		$address = $r->customer->address;
+		$password = $r->customer->password;
+		$isUserExists = $db->getOneRecord("select 1 from customers_auth where phone='$phone' or email='$email'");
+		if(!$isUserExists){
+			$r->customer->password = passwordHash::hash($password);
+			$tabble_name = "customers_auth";
+			$column_names = array('phone', 'name', 'email', 'password', 'city', 'address');
+			$result = $db->insertIntoTable($r->customer, $column_names, $tabble_name);
+			if ($result != NULL) {
+				$response["status"] = "success";
+				$response["message"] = "User account created successfully";
+				$response["uid"] = $result;
+				if (!isset($_SESSION)) {
+					session_start();
+				}
+				$_SESSION['uid'] = $response["uid"];
+				$_SESSION['phone'] = $phone;
+				$_SESSION['name'] = $name;
+				$_SESSION['email'] = $email;
+				echoResponse(200, $response);
+			} else {
+				$response["status"] = "error";
+				$response["message"] = "Failed to create customer. Please try again";
+				echoResponse(201, $response);
+			}
+		}else{
+			$response["status"] = "error";
+			$response["message"] = "An user with the provided phone or email exists!";
+			echoResponse(201, $response);
+		}
+	});
+	
 $app->get('/logout', function() {
     $db = new DbHandler();
     $session = $db->destroySession();
