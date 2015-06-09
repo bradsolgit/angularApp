@@ -3,9 +3,16 @@ app.controller('authCtrl', function ($scope, $rootScope, $routeParams, $location
     $scope.login = {};
     $scope.signup = {};
     
-   // $scope.customers= [{customerName:'Rohit',password:'Rohit',name:'Rohit',phone:'9966866886',address:''}];
+   $scope.customers= [{customerName:'Rohit',password:'Rohit',name:'Rohit',phone:'9966866886',address:''}];
     
+   Data.get('customers', {
        
+   }).then(function (results) {
+       Data.toast(results);
+       $scope.customers = results;
+   });
+
+   
     $scope.doLogin = function (customer) {
         Data.post('login', {
             customer: customer
