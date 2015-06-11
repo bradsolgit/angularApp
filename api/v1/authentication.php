@@ -91,7 +91,7 @@ $app->get('/customers', function() use ($app) {
     
     if(true){
         $tabble_name = "angularcode_customers";
-        $result = $db->getAllRecords("select customerName,email,address,customerNumber from angularcode_customers");
+        $result = $db->getAllRecords("select customerName,email,address,customerNumber,city,country from angularcode_customers");
         if ($result != NULL) {
         	$response['status'] = "success";
         	$response['message'] = 'Logged in successfully.';
@@ -100,6 +100,8 @@ $app->get('/customers', function() use ($app) {
         		$customers[$i]['email']= $var[1];
         		$customers[$i]['address']= $var[2];
         		$customers[$i]['customerNumber']= $var[3];
+        		$customers[$i]['city']= $var[4];
+        		$customers[$i]['country']= $var[5];
         	}
         	$response['customers'] = $customers;
             echoResponse(200, $response);
@@ -166,36 +168,55 @@ $app->get('/customers', function() use ($app) {
 		}
 	});
 	
-		$app->post('/updateCustomer', function() use ($app) {
-			$response = array();
-			$r = json_decode($app->request->getBody());
-			$db = new DbHandler();
-			$name = $r->customer->customerName;
-			$email = $r->customer->email;
-			$address = $r->customer->address;
-			$city = $r->customer->city;
-			$country = $r->customer->country;
-			$id = $r->id;
-				$tabble_name = "angularcode_customers";
-				$column_names = array('country', 'customerName', 'email', 'city', 'address');
-				$result = $db->updateRecordInTable($r->customer, $column_names, $tabble_name,$id);
-				if ($result != NULL) {
-					$response["status"] = "success";
-					$response["message"] = "Customer updated successfully";
-					echoResponse(200, $response);
-				} else {
-					$response["status"] = "error";
-					$response["message"] = "Failed to update customer. Please try again";
-					echoResponse(201, $response);
-				}
-			
-		});
+	$app->post('/updateCustomer', function() use ($app) {
+		$response = array();
+		$r = json_decode($app->request->getBody());
+		$db = new DbHandler();
+		$name = $r->customer->customerName;
+		$email = $r->customer->email;
+		$address = $r->customer->address;
+		$city = $r->customer->city;
+		$country = $r->customer->country;
+		$id = $r->id;
+			$tabble_name = "angularcode_customers";
+			$column_names = array('country', 'customerName', 'email', 'city', 'address');
+			$result = $db->updateRecordInTable($r->customer, $column_names, $tabble_name,$id);
+			if ($result != NULL) {
+				$response["status"] = "success";
+				$response["message"] = "Customer updated successfully";
+				echoResponse(200, $response);
+			} else {
+				$response["status"] = "error";
+				$response["message"] = "Failed to update customer. Please try again";
+				echoResponse(201, $response);
+			}
 		
-$app->get('/logout', function() {
-    $db = new DbHandler();
-    $session = $db->destroySession();
-    $response["status"] = "info";
-    $response["message"] = "Logged out successfully";
-    echoResponse(200, $response);
-});
+	});
+		
+	$app->post('/deleteCustomer', function() use ($app) {
+		$response = array();
+		$r = json_decode($app->request->getBody());
+		$db = new DbHandler();
+		$id = $r->id;
+		$tabble_name = "angularcode_customers";
+		$result = $db->deleteRecord($tabble_name, 'customerNumber', $id);
+		if ($result != NULL) {
+			$response["status"] = "success";
+			$response["message"] = "Customer deleted successfully";
+			echoResponse(200, $response);
+		} else {
+			$response["status"] = "error";
+			$response["message"] = "Failed to delete customer. Please try again";
+			echoResponse(201, $response);
+		}
+			
+	});
+		
+	$app->get('/logout', function() {
+	    $db = new DbHandler();
+	    $session = $db->destroySession();
+	    $response["status"] = "info";
+	    $response["message"] = "Logged out successfully";
+	    echoResponse(200, $response);
+	});
 ?>

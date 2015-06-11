@@ -3,7 +3,6 @@ app.controller('authCtrl', function ($scope, $rootScope, $routeParams, $location
     $scope.login = {};
     $scope.signup = {};
     
-   $scope.customers= [{customerName:'Rohit',password:'Rohit',name:'Rohit',phone:'9966866886',address:''}];
     
    Data.get('customers', {
        
@@ -23,6 +22,27 @@ app.controller('authCtrl', function ($scope, $rootScope, $routeParams, $location
             }
         });
     };
+    
+    $scope.deleteCustomer = function (id) {
+    	if (confirm("sure to delete?")) {
+            // todo code for deletion
+        
+        Data.post('deleteCustomer', {
+            id:   id
+        }).then(function (results) {
+            Data.toast(results);
+            if (results.status == "success") {
+            	Data.get('customers', {
+            	       
+            	   }).then(function (results) {
+            	        $scope.customers = results.customers;
+            	   });
+
+            }
+        });
+    	}
+    };
+    
     $scope.signup = {email:'',password:'',name:'',phone:'',address:''};
     $scope.signUp = function (customer) {
         Data.post('signUp', {

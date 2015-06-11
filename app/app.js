@@ -28,7 +28,7 @@ app.config(['$routeProvider',
 		        templateUrl: 'partials/edit-customer.html',
 		        controller: 'customerCtrl',
 		      })
-            .when('/', {
+		    .when('/', {
                 title: 'Login',
                 templateUrl: 'partials/login.html',
                 controller: 'authCtrl',
