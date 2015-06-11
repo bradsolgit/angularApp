@@ -63,5 +63,6 @@
   <script src="app/data.js"></script>
   <script src="app/directives.js"></script>
   <script src="app/authCtrl.js"></script>
+  <script src="app/customerCtrl.js"></script>
 </html>
 

@@ -120,13 +120,15 @@ $app->get('/customers', function() use ($app) {
 		$response = array();
 		$db = new DbHandler();
 		$customerID = $r->customerID;
-		$user = $db->getOneRecord("select customerName,email,address from angularcode_customers where customerNumber='$customerID'");
+		$user = $db->getOneRecord("select customerName,email,address,city,country from angularcode_customers where customerNumber='$customerID'");
 		if ($user != NULL) {
 			$response['status'] = "success";
 			$response['message'] = 'Logged in successfully.';
-			$response['name'] = $user['customerName'];
+			$response['customerName'] = $user['customerName'];
 			$response['email'] = $user['email'];
 			$response['address'] = $user['address'];
+			$response['city'] = $user['city'];
+			$response['country'] = $user['country'];
 		}else {
 			$response['status'] = "error";
 			$response['message'] = 'No such user is registered';
@@ -134,32 +136,23 @@ $app->get('/customers', function() use ($app) {
 		echoResponse(200, $response);
 	});
 	
-	$app->get('/insertCustomer', function() use ($app) {
+	$app->post('/insertCustomer', function() use ($app) {
 		$response = array();
 		$r = json_decode($app->request->getBody());
 		$db = new DbHandler();
-		$phone = $r->customer->phone;
-		$name = $r->customer->name;
+		$name = $r->customer->customerName;
 		$email = $r->customer->email;
 		$address = $r->customer->address;
-		$password = $r->customer->password;
-		$isUserExists = $db->getOneRecord("select 1 from customers_auth where phone='$phone' or email='$email'");
+		$city = $r->customer->city;
+		$country = $r->customer->country;
+		$isUserExists = $db->getOneRecord("select 1 from angularcode_customers where customerName='$name' or email='$email'");
 		if(!$isUserExists){
-			$r->customer->password = passwordHash::hash($password);
-			$tabble_name = "customers_auth";
-			$column_names = array('phone', 'name', 'email', 'password', 'city', 'address');
+			$tabble_name = "angularcode_customers";
+			$column_names = array('country', 'customerName', 'email', 'city', 'address');
 			$result = $db->insertIntoTable($r->customer, $column_names, $tabble_name);
 			if ($result != NULL) {
 				$response["status"] = "success";
-				$response["message"] = "User account created successfully";
-				$response["uid"] = $result;
-				if (!isset($_SESSION)) {
-					session_start();
-				}
-				$_SESSION['uid'] = $response["uid"];
-				$_SESSION['phone'] = $phone;
-				$_SESSION['name'] = $name;
-				$_SESSION['email'] = $email;
+				$response["message"] = "Customer created successfully";
 				echoResponse(200, $response);
 			} else {
 				$response["status"] = "error";
@@ -168,11 +161,36 @@ $app->get('/customers', function() use ($app) {
 			}
 		}else{
 			$response["status"] = "error";
-			$response["message"] = "An user with the provided phone or email exists!";
+			$response["message"] = "An user with the provided name or email exists!";
 			echoResponse(201, $response);
 		}
 	});
 	
+		$app->post('/updateCustomer', function() use ($app) {
+			$response = array();
+			$r = json_decode($app->request->getBody());
+			$db = new DbHandler();
+			$name = $r->customer->customerName;
+			$email = $r->customer->email;
+			$address = $r->customer->address;
+			$city = $r->customer->city;
+			$country = $r->customer->country;
+			$id = $r->id;
+				$tabble_name = "angularcode_customers";
+				$column_names = array('country', 'customerName', 'email', 'city', 'address');
+				$result = $db->updateRecordInTable($r->customer, $column_names, $tabble_name,$id);
+				if ($result != NULL) {
+					$response["status"] = "success";
+					$response["message"] = "Customer updated successfully";
+					echoResponse(200, $response);
+				} else {
+					$response["status"] = "error";
+					$response["message"] = "Failed to update customer. Please try again";
+					echoResponse(201, $response);
+				}
+			
+		});
+		
 $app->get('/logout', function() {
     $db = new DbHandler();
     $session = $db->destroySession();

@@ -1,15 +1,7 @@
-<style type="text/css">
-  .form-horizontal input.ng-invalid.ng-dirty {
-    border-color: #FA787E;
-  }
 
-  .form-horizontal input.ng-valid.ng-dirty {
-    border-color: #78FA89;
-  }
-</style>
-<div class="view">
-    <div class="container">
-        <div class="row">
+<div class="page-content">
+    
+            <div class="row">
         
         <header>
             <h3>{{title}}</h3>
@@ -18,10 +10,12 @@
 
 <form role="form" name="myForm" class="form-horizontal">
 <div class="row">
+
+<input name="id" value="{{customerID}}" type= "hidden"  />
 <div class= "form-group" ng-class="{error: myForm.name.$invalid}">
     <label class= "col-md-2"> Name </label>
     <div class="col-md-4">
-    <input name="name" ng-model="customer.name" value="{{cutomer.name}}" type= "text" class= "form-control" placeholder="Your name" required/>
+    <input name="customerName" ng-model="customer.customerName" value="{{cutomer.customerName}}" type= "text" class= "form-control" placeholder="Your name" required/>
     <span ng-show="myForm.name.$dirty && myForm.name.$invalid" class="help-inline">Name Required</span>
     </div>
 </div>
@@ -65,5 +59,7 @@
 </div>
 </form>
         </div></div>
-    </div>
+    
+    
 </div>
+<!-- /.page-content -->

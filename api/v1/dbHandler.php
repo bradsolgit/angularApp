@@ -56,6 +56,35 @@ class DbHandler {
             return NULL;
         }
     }
+    
+    /**
+     * updatingg record
+     */
+    public function updateRecordInTable($obj, $column_names, $table_name , $id) {
+    
+    	$c = (array) $obj;
+    	$keys = array_keys($c);
+    	$columns = '';
+    	$values = '';
+    	foreach($column_names as $desired_key){ // Check the customer received. If key does not exist, insert blank into the array.
+    		if(!in_array($desired_key, $keys)) {
+    			$$desired_key = '';
+    		}else{
+    			$$desired_key = $c[$desired_key];
+    		}
+    		$columns = $columns.$desired_key."='".$$desired_key."',";
+    	}
+    	$query = "UPDATE ".$table_name." SET ".trim($columns,',')." WHERE customerNumber=$id";
+    		
+    	$r = $this->conn->query($query) or die($this->conn->error.__LINE__);
+    
+    	if ($r) {
+    		return "true";
+    	} else {
+    		return NULL;
+    	}
+    }
+    
 public function getSession(){
     if (!isset($_SESSION)) {
         session_start();

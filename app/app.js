@@ -26,17 +26,7 @@ app.config(['$routeProvider',
             .when('/edit-customer/:customerID', {
 		        title: 'Edit Customers',
 		        templateUrl: 'partials/edit-customer.html',
-		        controller: 'authCtrl',
-		        resolve: {
-		          customer: function(Data,$route){
-		            var customerID = $route.current.params.customerID;
-		            return Data.post('customer', {
-		            	customerID: customerID
-		            	}).then(function (results) {
-		            		customer = results;
-		                });
-		          }
-		        }
+		        controller: 'customerCtrl',
 		      })
             .when('/', {
                 title: 'Login',
