@@ -1,4 +1,4 @@
-app.controller('customerCtrl', function ($scope, $rootScope, $routeParams, $location, $http, Data) {
+app.controller('customerCtrl', function ($scope, $rootScope, $routeParams, $location, $http, fileUpload, Data) {
     //initially set those objects to null to avoid undefined error
     $scope.login = {};
     $scope.signup = {};
@@ -23,6 +23,26 @@ app.controller('customerCtrl', function ($scope, $rootScope, $routeParams, $loca
            });
       }
       
+      $scope.uploadFile = function(files) {
+    	    var fd = new FormData();
+    	    //Take the first selected file
+    	    fd.append("file", files[0]);
+
+    	    $http.post(uploadUrl, fd, {
+    	        withCredentials: true,
+    	        headers: {'Content-Type': undefined },
+    	        transformRequest: angular.identity
+    	    }).success( "").error("");
+
+    	};
+    	
+	 $scope.uploadFileDir = function(){
+	        var file = $scope.myFile;
+	        console.log('file is ' + JSON.stringify(file));
+	        var uploadUrl = "api/v1/fileUpload1";
+	        fileUpload.uploadFileToUrl(file, uploadUrl);
+	    };
+	
       $scope.saveCustomer = function(customer) {
           if (customerID <= 0) {
         	  Data.post('insertCustomer', {
@@ -31,6 +51,10 @@ app.controller('customerCtrl', function ($scope, $rootScope, $routeParams, $loca
               }).then(function (results) {
                   Data.toast(results);
                   if (results.status == "success") {
+                	  var file = $scope.myFile;
+          	        console.log('file is ' + JSON.stringify(file));
+          	        var uploadUrl = "api/v1/fileUpload1";
+          	        fileUpload.uploadFileToUrl(file, uploadUrl);
                       $location.path('dashboard');
                   }
               });          
@@ -41,6 +65,10 @@ app.controller('customerCtrl', function ($scope, $rootScope, $routeParams, $loca
             }).then(function (results) {
                 Data.toast(results);
                 if (results.status == "success") {
+                	var file = $scope.myFile;
+        	        console.log('file is ' + JSON.stringify(file));
+        	        var uploadUrl = "api/v1/fileUpload1";
+        	        fileUpload.uploadFileToUrl(file, uploadUrl);
                     $location.path('dashboard');
                 }
             });

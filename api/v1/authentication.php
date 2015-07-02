@@ -211,6 +211,87 @@ $app->get('/customers', function() use ($app) {
 		}
 			
 	});
+	
+	$app->post('/fileUpload1', function() use ($app) {
+		if (!isset($_FILES['file'])) {
+        echo "No files uploaded!!";
+        return;
+    }
+
+    $imgs = array();
+
+    $files = $_FILES['file'];
+    
+    $image = trim($files['name'], " ");
+    //$uploadedfile = $_FILES['file']['tmp_name'];
+    
+    if ($image)
+    {
+    	$filename = stripslashes($image);
+    	//$extension = getExtension($filename);
+    	$extension = $files['type'];
+    	if (($extension != "image/jpeg") && ($extension != "jpg") && ($extension != "jpeg")
+    
+    			&& ($extension != "png") && ($extension != "gif"))
+    	{
+    		echo ' Unknown Image extension ';
+    		$errors=1;
+    	}
+    	else
+    	{
+    		//$size=filesize($uploadedfile->size);
+    
+    			
+    		if($extension=="jpg" || $extension=="jpeg" || $extension=="image/jpeg" || $extension=="image/jpg")
+    		{
+    			//$uploadedfile = $_FILES['file']['tmp_name'];
+    			$src = imagecreatefromjpeg(trim($files['tempName']," "));
+    		}
+    		else if($extension=="png" || $extension=="image/png")
+    		{
+    			//$uploadedfile = $_FILES['file']['tmp_name'];
+    			$src = imagecreatefrompng($files['tempName']);
+    		}
+    		else
+    		{
+    			$src = imagecreatefromgif($files['tempName']);
+    		}
+    
+    		list($width,$height)=getimagesize($files['tempName']);
+    
+    		$newwidth=841;
+    		$newheight=($height/$width)*$newwidth;
+    		$tmp=imagecreatetruecolor($newwidth,$newheight);
+    
+    		
+    		imagecopyresampled($tmp,$src,0,0,0,0,$newwidth,$newheight,
+    
+    		$width,$height);
+    
+    		
+    		$filename = UPLOAD_PATH . str_replace(' ', '', $image);
+    		
+    		imagejpeg($tmp,$filename,100);
+    		
+    		imagedestroy($src);
+    		imagedestroy($tmp);
+    		imagedestroy($tmp1);
+    	}
+    }
+    
+
+
+    if ($result != NULL) {
+			$response["status"] = "success";
+			$response["message"] = "Customer deleted successfully";
+			echoResponse(200, $response);
+		} else {
+			$response["status"] = "error";
+			$response["message"] = "Failed to delete customer. Please try again";
+			echoResponse(201, $response);
+		}
+			
+	});
 		
 	$app->get('/logout', function() {
 	    $db = new DbHandler();
